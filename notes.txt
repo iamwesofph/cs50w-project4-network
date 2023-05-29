@@ -1,0 +1,23 @@
+
+TODOS
+May 1:
+    study about post and views and button and form names OK
+    add posting comment functionality OK
+    fix anonymous user OK
+edit code to remove watchlist views incorporate code in listing view
+    style comments section to have profile picture fixed size OK
+style bootstrap form classes
+    send thet balance OK
+    submit project 3 OK
+    finish lecture OK
+    change register user to upload pic, last name first name, handle OK
+
+test fetch with CSRFToken, remove excempt
+compute fred total
+    apply bootstrap pagination OK
+    style the whole project OK
+find way to customize django validation of handle (animation)
+make same project using react
+
+material design
+figma

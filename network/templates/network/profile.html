@@ -1,0 +1,119 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+    
+    <div class="container posts-container pt-1">
+        <div class="d-flex justify-content-center align-items-center" style="height: 300px;">
+
+            <div class="d-flex flex-column">
+                <h1>{{user_profile.first_name}}  {{user_profile.last_name}}</h1>
+                <h5>{{ user_profile.handle }}</h5>    
+            </div>
+            
+    
+            <form method="POST" action="{% url 'follow' id=user_profile.id %}">
+                {% csrf_token %}
+                <div class="d-flex flex-column">
+                    <img class="rounded-circle img-fluid m-3" id="profile-pic" src="{% static user_profile.pic_filename|default:'missing-profile-picture-icon.png' %}" alt="{{ comment.user.username }}">
+                    {% if user.is_authenticated %}
+                    {% if user != user_profile %}
+                    {% if is_following %}
+                    <button class="btn btn-danger my-3" type="submit" name="action" value="unfollow">Unfollow</button>                    
+                    {% else %}
+                    <button class="btn btn-success my-3" type="submit" name="action" value="follow">Follow</button>
+                    {% endif %}
+                    {% else %}
+                    <button class="btn btn-secondary my-3" type="submit" name="action" value="follow" disabled>Follow</button>
+                    {% endif %}
+                    {% else %}
+                    <a href="{% url 'login' %}" class="text-primary">Login to follow {{ user_profile.handle }}</a>
+                    {% endif %}    
+                </div>
+            </form>            
+
+            <div class="d-flex flex-column">
+                <span>
+                    Followers: {{ user_profile.total_followers }}
+                </span> 
+                <span>
+                    Following: {{ user_profile.total_following }}
+                </span> 
+            </div>
+            
+        </div>        
+        
+        <hr>
+    </div>        
+    
+    
+    {% for post in page_obj %}
+        <div class="container py-3 posts-container">
+    
+            <div class="row">
+                <div class="col-2">
+                    <img class="rounded-circle img-fluid" id="poster-prof-pic" src="{% static post.author.pic_filename|default:'missing-profile-picture-icon.png' %}" alt="{{ comment.user.username }}">
+                </div>
+                <div class="col-4">
+                    <a href="{% url 'profile' id=post.author.id %}"> <h3>{{ post.author.handle }} </h3> </a>
+                </div>
+                
+                {% if user.is_authenticated and user == post.author %}
+                <div class="col-6 text-end"> 
+                    <button class="btn btn-primary mx-3" type="button" onclick="editPost('{{ post.id }}')" name="action" id="btn-edit-post-{{ post.id }}" value="edit">Edit</button>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="row">
+                <div class="col lead my-3" id="post-{{ post.id }}">{{ post.content }}</div>
+            </div>    
+
+            <div class="row">
+                <div class="col"> 
+                    <small>Posted: {{ post.created_at }}</small>
+                </div>
+                <div class="like-button col">
+                    <div class="heart-bg">     
+                        {% if user.id in post.is_liked_by_user_ids %}
+                            <div class="heart-icon liked" id="heart-icon-{{ post.id }}" onclick="like('{{ post.id }}')" style="background: url('{% static 'network/heart.png' %}')"></div>
+                        {% else %}
+                            <div class="heart-icon" id="heart-icon-{{ post.id }}" onclick="like('{{ post.id }}')" style="background: url('{% static 'network/heart.png' %}')"></div>    
+                        {% endif %}                        
+                    </div>
+                    <div class="likes-amount" id="likes-amount-{{ post.id }}">{{ post.total_likes }}</div>
+                </div>
+            </div>
+            <hr>
+        </div>
+        {% empty %} No posts found
+    {% endfor %}
+    
+    <div class="container posts-container py-3">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+             {% if page_obj.number != 1 %}   
+                {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+                {% endif %}
+                {% for page in page_obj.paginator.page_range %}
+                    {% if page == page_obj.number %}
+                        <li class="page-item active"><a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
+                    {% else %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                {% endif %}
+            {% endif %}
+            </ul>
+        </nav>    
+    </div>
+    
+
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/network.js' %}"></script>
+{% endblock %}

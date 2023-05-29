@@ -1,0 +1,29 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+    <div class="container registration-container">
+      <div class="my-3">
+        <h2>Register</h2>
+      </div>
+      {% if message %}
+        <div class="mb-3">{{ message }}</div>
+      {% endif %}  
+    </div>
+
+    <div class="container registration-container">
+      <form action="{% url 'register' %}" method="post" class="container" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="mb-3 row">
+          <label class="col-sm-2 col-form-label">{{field.label_tag}}</label>
+          <div class="col-sm-10">
+            {{field}}
+          </div>
+        </div>        
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Register</button>
+      </form>
+      <br>
+      Already have an account? <a href="{% url 'login' %}">Log In here.</a>
+    </div>
+{% endblock %}
